@@ -2,6 +2,9 @@
 
 set -ouex pipefail
 
+# Copy files from context
+cp -avf "/tmp/ctx/files"/. /
+
 ### Install packages
 
 # Packages can be installed from any enabled yum repo on the image.
@@ -31,4 +34,4 @@ dnf5 -y copr disable scottames/ghostty
 
 #### Example for enabling a System Unit File
 
-systemctl enable podman.socket
+systemctl enable podman.socket brew-setup.service

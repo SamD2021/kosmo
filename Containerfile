@@ -3,7 +3,7 @@ FROM scratch AS ctx
 COPY build_files /
 
 # Base Image
-FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:42
+FROM quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 
 ## Other possible base images include:
 # FROM ghcr.io/ublue-os/bazzite:latest

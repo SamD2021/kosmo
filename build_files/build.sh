@@ -10,11 +10,18 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 dnf5 -y copr enable scottames/ghostty
 # this installs a package from fedora repos
+dnf5 install --allowerasing -y \
+	fedora-asahi-remix-release-cosmic-atomic \
+	fedora-asahi-remix-release-identity-cosmic-atomic
+
 dnf5 install -y \
 	tmux \
 	just \
-	ghostty
+	ghostty \
+	@cosmic-desktop-environment
 
+dnf5 clean all
+dnf5 -y copr disable scottames/ghostty
 # Use a COPR Example:
 #
 # dnf5 -y copr enable ublue-os/staging

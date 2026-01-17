@@ -8,6 +8,9 @@ COPY --from=ghcr.io/ublue-os/brew:latest /system_files /files
 # Base Image
 FROM quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 
+ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"
+
 ## Other possible base images include:
 # FROM ghcr.io/ublue-os/bazzite:latest
 # FROM ghcr.io/ublue-os/bluefin-nvidia:stable
@@ -42,5 +45,5 @@ RUN --mount=type=tmpfs,dst=/var \
 ### LINTING
 ## Verify final image and contents are correct.
 LABEL containers.bootc=1
-LABEL org.opencontainers.image.source="https://github.com/SamD2021/asahi-bluefin"
+LABEL org.opencontainers.image.source="https://github.com/samd2021/kosmo"
 RUN bootc container lint

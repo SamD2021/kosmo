@@ -32,6 +32,7 @@ dnf5 -y copr disable scottames/ghostty
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
 
+/tmp/ctx/branding.sh
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket brew-setup.service

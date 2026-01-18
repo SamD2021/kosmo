@@ -22,7 +22,10 @@ dnf5 install -y \
 	just \
 	ghostty \
 	asahi-nvram \
+	zsh \
+	gcc \
 	@cosmic-desktop-environment
+
 
 dnf5 clean all
 dnf5 -y copr disable scottames/ghostty

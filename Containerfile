@@ -5,8 +5,9 @@ COPY --from=ghcr.io/projectbluefin/common:latest /system_files/bluefin /files
 COPY --from=ghcr.io/projectbluefin/common:latest /system_files/shared /files
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /files
 
+# OPTIONS: quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 # Base Image
-FROM quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
+FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:42
 
 ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"

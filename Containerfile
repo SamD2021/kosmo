@@ -1,6 +1,7 @@
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
 COPY build_files /
+COPY files /files
 COPY --from=ghcr.io/projectbluefin/common:latest /system_files/bluefin /files
 COPY --from=ghcr.io/projectbluefin/common:latest /system_files/shared /files
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /files

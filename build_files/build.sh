@@ -62,7 +62,10 @@ dnf5 install -y \
 	asahi-nvram \
 	zsh \
 	gcc \
-	gnome-shell-extension-pop-shell
+	gnome-shell-extension-pop-shell \
+	pam-u2f \
+	pamu2fcfg \
+	libfido2
 
 #	@cosmic-desktop-environment
 

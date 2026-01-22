@@ -5,13 +5,11 @@ set -ouex pipefail
 # Copy files from context
 cp -avf "/tmp/ctx/files"/. /
 
-
-
 # Caffeine extension setup
 # The Caffeine extension is built/packaged into a temporary subdirectory.
 # It must be moved to the standard extensions directory for GNOME Shell to detect it.
 if [ -d /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info ]; then
-    mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
+  mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
 fi
 
 # Logo Menu setup
@@ -21,9 +19,9 @@ install -Dpm0755 -t /usr/bin /usr/share/gnome-shell/extensions/logomenu@aryan_k/
 
 # GSchema compilation for extensions
 for schema_dir in /usr/share/gnome-shell/extensions/*/schemas; do
-    if [ -d "${schema_dir}" ]; then
-        glib-compile-schemas --strict "${schema_dir}"
-    fi
+  if [ -d "${schema_dir}" ]; then
+    glib-compile-schemas --strict "${schema_dir}"
+  fi
 done
 
 # Bluefin GSchema overrides
@@ -49,26 +47,25 @@ glib-compile-schemas /usr/share/glib-2.0/schemas
 # List of rpmfusion packages can be found here:
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 dnf5 -y copr enable scottames/ghostty
- 
+
 # How to replace identity to cosmic atomic asahi linux
 #dnf5 install --allowerasing -y \
 #	fedora-asahi-remix-release-cosmic-atomic \
 #	fedora-asahi-remix-release-identity-cosmic-atomic
 
 dnf5 install -y \
-	tmux \
-	just \
-	ghostty \
-	asahi-nvram \
-	zsh \
-	gcc \
-	gnome-shell-extension-pop-shell \
-	pam-u2f \
-	pamu2fcfg \
-	libfido2
+  tmux \
+  just \
+  ghostty \
+  asahi-nvram \
+  zsh \
+  gcc \
+  gnome-shell-extension-pop-shell \
+  pam-u2f \
+  pamu2fcfg \
+  libfido2
 
 #	@cosmic-desktop-environment
-
 
 dnf5 clean all
 dnf5 -y copr disable scottames/ghostty

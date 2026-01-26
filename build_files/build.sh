@@ -5,6 +5,26 @@ set -ouex pipefail
 # Copy files from context
 cp -avf "/tmp/ctx/files"/. /
 
+# Bootc kernel args:
+# - quiet + splash: keep graphical LUKS unlock
+# - plymouth.ignore-serial-consoles: reduce boot delay on Apple Silicon
+mkdir -p /usr/lib/bootc/kargs.d
+cat >/usr/lib/bootc/kargs.d/10-base-boot-options.toml <<EOF
+kargs = [
+  "quiet",
+  "splash",
+  "plymouth.ignore-serial-consoles"
+]
+match-architectures = ["aarch64"]
+EOF
+
+# Reduce shutdown/reboot timeout for faster restarts
+mkdir -p /etc/systemd/system.conf.d
+cat >/etc/systemd/system.conf.d/10-fast-shutdown.conf <<EOF
+[Manager]
+DefaultTimeoutStopSec=10s
+EOF
+
 # Caffeine extension setup
 # The Caffeine extension is built/packaged into a temporary subdirectory.
 # It must be moved to the standard extensions directory for GNOME Shell to detect it.
@@ -89,3 +109,7 @@ dnf5 -y copr disable scottames/ghostty
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket brew-setup.service
+# Disable NetworkManager wait-online (unnecessary on desktops)
+systemctl disable NetworkManager-wait-online.service
+# Skip Plymouth quit wait to reduce boot delay (keep graphical LUKS prompt)
+systemctl mask plymouth-quit-wait.service

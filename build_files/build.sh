@@ -13,9 +13,11 @@ if [ -d /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info ]; 
 fi
 
 # Blur-my-shell extension setup
-# the extension.js file must be moved to the standard extensions directory for GNOME Shell to detect it.
-if [ -f /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/src/extension.js ]; then
-  mv /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/src/extension.js /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/
+# the src/* files must be moved to the standard extensions directory for GNOME Shell to detect it.
+BMS_DIR=/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
+
+if [ -d "$BMS_DIR/src" ]; then
+  cp -a "$BMS_DIR/src/." "$BMS_DIR/"
 fi
 
 # Logo Menu setup

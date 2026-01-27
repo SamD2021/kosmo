@@ -99,6 +99,8 @@ dnf5 install -y \
   qemu \
   libvirt \
   libvirt-devel \
+  virt-install \
+  genisoimage \
   virt-manager \
   openvswitch \
   swtpm

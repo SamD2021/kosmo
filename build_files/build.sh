@@ -92,7 +92,9 @@ dnf5 install -y \
   pam-u2f \
   pamu2fcfg \
   libfido2 \
-  qemu
+  qemu \
+  libvirt \
+  virt-manager
 
 #	@cosmic-desktop-environment
 

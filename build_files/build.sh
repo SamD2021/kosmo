@@ -98,7 +98,9 @@ dnf5 install -y \
   libfido2 \
   qemu \
   libvirt \
-  virt-manager
+  virt-manager \
+  openvswitch \
+  swtpm
 
 #	@cosmic-desktop-environment
 

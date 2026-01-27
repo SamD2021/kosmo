@@ -98,6 +98,7 @@ dnf5 install -y \
   libfido2 \
   qemu \
   libvirt \
+  libvirt-devel \
   virt-manager \
   openvswitch \
   swtpm

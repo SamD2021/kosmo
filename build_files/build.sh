@@ -2,6 +2,10 @@
 
 set -ouex pipefail
 
+### Setup nix
+echo -e '[composefs]\nenabled = yes\n\n[root]\ntransient = true' >/usr/lib/ostree/prepare-root.conf && ostree container commit
+
+mkdir -p /nix && ostree container commit
 # Copy files from context
 cp -avf "/tmp/ctx/files"/. /
 

@@ -6,6 +6,58 @@ set -ouex pipefail
 echo -e '[composefs]\nenabled = yes\n\n[root]\ntransient = true' >/usr/lib/ostree/prepare-root.conf && ostree container commit
 
 mkdir -p /nix && ostree container commit
+
+### Fix bluetooth
+dnf5 install -y bluez-deprecated expect
+cat >/etc/systemd/system/bt-a2dp-fix.service <<EOF
+[Unit]
+Description=Bluetooth A2DP stutter fix for Apple Silicon
+After=bluetooth.target
+Wants=bluetooth.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bt-a2dp-fix.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat >/usr/bin/bt-a2dp-fix.sh <<'EOF'
+#!/bin/bash
+# Bluetooth A2DP stutter fix for Apple Silicon (BCM4377/4378/4387)
+# https://github.com/bluez/bluez/issues/722
+
+unbuffer bluetoothctl --monitor | while read -r line; do
+    if [[ "$line" =~ Device.*([0-9A-F:]{17}).*Connected:\ yes ]]; then
+        mac="${BASH_REMATCH[1]}"
+        sleep 2
+        bluetoothctl info "$mac" | grep -q "Audio Sink" || continue
+        handle=$(hcitool con | grep -i "$mac" | grep -oP 'handle \K[0-9]+')
+        [[ -n "$handle" ]] && hcitool cmd 0x3f 0x57 "$(printf 0x%02X $handle)" 0x00 0x01
+    fi
+done
+EOF
+
+mkdir -p "/etc/wireplumber/wireplumber.conf.d"
+
+cat >/etc/wireplumber/wireplumber.conf.d/50-bt-latency.conf <<EOF
+monitor.bluez.rules = [
+  {
+    matches = [
+      { node.name = "~bluez_output.*" }
+    ]
+    actions = {
+      update-props = {
+        latency.internal.ns = 100000000
+      }
+    }
+  }
+]
+EOF
+
 # Copy files from context
 cp -avf "/tmp/ctx/files"/. /
 
@@ -119,7 +171,7 @@ dnf5 -y copr disable scottames/ghostty
 /tmp/ctx/branding.sh
 #### Example for enabling a System Unit File
 
-systemctl enable podman.socket brew-setup.service
+systemctl enable podman.socket brew-setup.service bt-a2dp-fix.service
 # Disable NetworkManager wait-online (unnecessary on desktops)
 systemctl disable NetworkManager-wait-online.service
 # Skip Plymouth quit wait to reduce boot delay (keep graphical LUKS prompt)

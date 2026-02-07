@@ -2,12 +2,9 @@
 	path = files/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 	url = https://github.com/aunetx/blur-my-shell.git
 	branch = master
-[submodule "files/usr/share/gnome-shell/extensions/tmp/caffeine"]
-	path = files/usr/share/gnome-shell/extensions/tmp/caffeine
+[submodule "files/usr/share/gnome-shell/extensions/caffeine@patapon.info"]
+	path = files/usr/share/gnome-shell/extensions/caffeine@patapon.info
 	url = https://github.com/eonpatapon/gnome-shell-extension-caffeine.git
-[submodule "files/usr/share/gnome-shell/extensions/gsconnect@andyholmes.github.io"]
-	path = files/usr/share/gnome-shell/extensions/gsconnect@andyholmes.github.io
-	url = https://github.com/GSConnect/gnome-shell-extension-gsconnect.git
 [submodule "files/usr/share/gnome-shell/extensions/logomenu@aryan_k"]
 	path = files/usr/share/gnome-shell/extensions/logomenu@aryan_k
 	url = https://github.com/ublue-os/Logomenu.git

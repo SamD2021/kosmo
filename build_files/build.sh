@@ -81,13 +81,6 @@ cat >/etc/systemd/system.conf.d/10-fast-shutdown.conf <<EOF
 DefaultTimeoutStopSec=10s
 EOF
 
-# Caffeine extension setup
-# The Caffeine extension is built/packaged into a temporary subdirectory.
-# It must be moved to the standard extensions directory for GNOME Shell to detect it.
-if [ -d /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info ]; then
-  mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
-fi
-
 # Blur-my-shell extension setup
 # the src/* files must be moved to the standard extensions directory for GNOME Shell to detect it.
 BMS_DIR=/usr/share/gnome-shell/extensions/blur-my-shell@aunetx

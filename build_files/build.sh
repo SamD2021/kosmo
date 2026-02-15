@@ -84,9 +84,22 @@ EOF
 # Blur-my-shell extension setup
 # the src/* files must be moved to the standard extensions directory for GNOME Shell to detect it.
 BMS_DIR=/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
+CAFFEINE_DIR=/usr/share/gnome-shell/extensions/caffeine@patapon.info
 
 if [ -d "$BMS_DIR/src" ]; then
   cp -a "$BMS_DIR/src/." "$BMS_DIR/"
+fi
+
+# Caffeine extension setup
+# Upstream repo wraps the actual extension in a nested directory.
+if [ -d "$CAFFEINE_DIR/caffeine@patapon.info" ]; then
+  cp -a "$CAFFEINE_DIR/caffeine@patapon.info/." "$CAFFEINE_DIR/"
+fi
+
+TMP_EXT_DIR=/usr/share/gnome-shell/extensions/tmp
+
+if [ -d "$TMP_EXT_DIR" ]; then
+  rm -rf "$TMP_EXT_DIR"
 fi
 
 # Logo Menu setup

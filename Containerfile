@@ -2,13 +2,13 @@
 FROM scratch AS ctx
 COPY build_files /
 COPY files /files
-COPY --from=ghcr.io/projectbluefin/common:latest /system_files/bluefin /files
-COPY --from=ghcr.io/projectbluefin/common:latest /system_files/shared /files
-COPY --from=ghcr.io/ublue-os/brew:latest /system_files /files
+COPY --from=ghcr.io/projectbluefin/common@sha256:e5bb8de6745eb3215c885819350e647719919be94aab8fca352b5555688f97d8 /system_files/bluefin /files
+COPY --from=ghcr.io/projectbluefin/common@sha256:e5bb8de6745eb3215c885819350e647719919be94aab8fca352b5555688f97d8 /system_files/shared /files
+COPY --from=ghcr.io/ublue-os/brew@sha256:d589a2a9e423e420dbe97de02efff1379d9a3d5ad84c1431db935cc62dc5eeb2 /system_files /files
 
 # OPTIONS: quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 # Base Image
-FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:42
+FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue@sha256:1228134ece3829e658c354ed9cf0eb2dc6ef8090e15b1d898f47e67fee30a6e6
 
 ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"
@@ -38,12 +38,33 @@ ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 RUN --mount=type=tmpfs,dst=/var \
-    --mount=type=tmpfs,dst=/tmp \
-    --mount=type=tmpfs,dst=/boot \
-    --mount=type=tmpfs,dst=/run \
-    --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
-    /tmp/ctx/build.sh
-    
+  --mount=type=tmpfs,dst=/tmp \
+  --mount=type=tmpfs,dst=/boot \
+  --mount=type=tmpfs,dst=/run \
+  --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
+  /tmp/ctx/build-setup.sh
+
+RUN --mount=type=tmpfs,dst=/var \
+  --mount=type=tmpfs,dst=/tmp \
+  --mount=type=tmpfs,dst=/boot \
+  --mount=type=tmpfs,dst=/run \
+  --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
+  /tmp/ctx/build-configure.sh
+
+RUN --mount=type=tmpfs,dst=/var \
+  --mount=type=tmpfs,dst=/tmp \
+  --mount=type=tmpfs,dst=/boot \
+  --mount=type=tmpfs,dst=/run \
+  --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
+  /tmp/ctx/build-packages.sh
+
+RUN --mount=type=tmpfs,dst=/var \
+  --mount=type=tmpfs,dst=/tmp \
+  --mount=type=tmpfs,dst=/boot \
+  --mount=type=tmpfs,dst=/run \
+  --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
+  /tmp/ctx/build-finalize.sh
+
 ### LINTING
 ## Verify final image and contents are correct.
 LABEL containers.bootc=1

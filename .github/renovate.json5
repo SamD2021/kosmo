@@ -1,21 +1,35 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices",
+    "config:best-practices"
   ],
 
   "rebaseWhen": "never",
 
+  "timezone": "Etc/UTC",
+  "schedule": ["before 6am on monday"],
+
+  "dependencyDashboard": true,
+  "labels": ["dependencies", "renovate"],
+
   "packageRules": [
     {
+      "description": "Automerge low-risk pin updates",
       "automerge": true,
       "matchUpdateTypes": ["pin", "pinDigest"]
     },
     {
-      "enabled": false,
-      "matchUpdateTypes": ["digest", "pinDigest", "pin"],
-      "matchDepTypes": ["container"],
-      "matchFileNames": [".github/workflows/**.yaml", ".github/workflows/**.yml"],
+      "description": "Container digest bumps are manual review",
+      "matchManagers": ["dockerfile"],
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["digest"],
+      "automerge": false,
+      "groupName": "container digests"
     },
+    {
+      "description": "Keep GitHub Actions updates manual",
+      "matchManagers": ["github-actions"],
+      "automerge": false
+    }
   ]
 }

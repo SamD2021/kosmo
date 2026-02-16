@@ -27,7 +27,7 @@ CODE_NAME="Kosmoceratops"
 ID="kosmo"
 
 # os-release
-cat > /usr/lib/os-release <<EOF
+cat >/usr/lib/os-release <<EOF
 NAME="${IMAGE_PRETTY_NAME}"
 ID="${ID}"
 ID_LIKE="fedora"
@@ -43,12 +43,7 @@ DEFAULT_HOSTNAME="kosmic"
 EOF
 
 # fastfetch user count (placeholder until you add your own endpoint)
-echo "experimental" > /usr/share/ublue-os/fastfetch-user-count
+echo "experimental" >/usr/share/ublue-os/fastfetch-user-count
 
-# Optional: keep Bazaar stats only if you ship Bazaar
-curl -fsSL \
-  'https://flathub.org/api/v2/stats/io.github.kolunmi.Bazaar?all=false&days=1' \
-  | jq -r ".installs_last_7_days" \
-  | numfmt --to=si --round=nearest \
-  > /usr/share/ublue-os/bazaar-install-count || true
-
+# Deterministic placeholder for Bazaar stats
+echo "n/a" >/usr/share/ublue-os/bazaar-install-count

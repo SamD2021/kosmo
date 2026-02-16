@@ -64,7 +64,8 @@ cat >/usr/lib/bootc/kargs.d/10-base-boot-options.toml <<'EOF3'
 kargs = [
   "quiet",
   "splash",
-  "plymouth.ignore-serial-consoles"
+  "plymouth.ignore-serial-consoles",
+  "apple_dcp.show_notch=1"
 ]
 match-architectures = ["aarch64"]
 EOF3

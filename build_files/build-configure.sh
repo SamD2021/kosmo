@@ -56,6 +56,10 @@ EOF2
 # Copy static files from context
 cp -avf /tmp/ctx/files/. /
 
+# Remove inherited GNOME-specific schema overrides from common layer.
+rm -f /usr/share/glib-2.0/schemas/zz0-bluefin-modifications.gschema.override
+rm -f /usr/share/glib-2.0/schemas/zz3-bluefin-unsupported-stuff.gschema.override
+
 # Bootc kernel args:
 # - quiet + splash: keep graphical LUKS unlock
 # - plymouth.ignore-serial-consoles: reduce boot delay on Apple Silicon
@@ -76,41 +80,6 @@ cat >/etc/systemd/system.conf.d/10-fast-shutdown.conf <<'EOF4'
 [Manager]
 DefaultTimeoutStopSec=10s
 EOF4
-
-# Blur-my-shell extension setup
-BMS_DIR=/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
-CAFFEINE_DIR=/usr/share/gnome-shell/extensions/caffeine@patapon.info
-
-if [ -d "$BMS_DIR/src" ]; then
-  cp -a "$BMS_DIR/src/." "$BMS_DIR/"
-fi
-
-# Caffeine extension setup
-if [ -d "$CAFFEINE_DIR/caffeine@patapon.info" ]; then
-  cp -a "$CAFFEINE_DIR/caffeine@patapon.info/." "$CAFFEINE_DIR/"
-fi
-
-TMP_EXT_DIR=/usr/share/gnome-shell/extensions/tmp
-if [ -d "$TMP_EXT_DIR" ]; then
-  rm -rf "$TMP_EXT_DIR"
-fi
-
-# Logo Menu setup
-install -Dpm0755 -t /usr/bin /usr/share/gnome-shell/extensions/logomenu@aryan_k/distroshelf-helper
-install -Dpm0755 -t /usr/bin /usr/share/gnome-shell/extensions/logomenu@aryan_k/missioncenter-helper
-
-# GSchema compilation for extensions
-for schema_dir in /usr/share/gnome-shell/extensions/*/schemas; do
-  if [ -d "${schema_dir}" ]; then
-    glib-compile-schemas --strict "${schema_dir}"
-  fi
-done
-
-# Bluefin GSchema overrides
-tee /usr/share/glib-2.0/schemas/zz3-bluefin-unsupported-stuff.gschema.override <<'EOF5'
-[org.gnome.shell]
-disable-extension-version-validation=true
-EOF5
 
 # Compile system-wide schemas
 rm -f /usr/share/glib-2.0/schemas/gschemas.compiled

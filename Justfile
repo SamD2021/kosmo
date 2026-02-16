@@ -96,7 +96,7 @@ build $target_image=image_name $tag=default_tag:
 
     podman build \
         "${BUILD_ARGS[@]}" \
-        --pull=newer \
+        --pull=missing \
         --tag "${target_image}:${tag}" \
         .
 

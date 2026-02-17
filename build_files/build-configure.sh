@@ -82,6 +82,37 @@ cat >/etc/systemd/system.conf.d/10-fast-shutdown.conf <<'EOF4'
 DefaultTimeoutStopSec=10s
 EOF4
 
+# Make update-m1n1 robust on immutable /usr images where source file mtimes may
+# trigger gzip warnings and non-zero exits.
+mkdir -p /usr/sbin
+mkdir -p /var/lib/asahi-boot
+cat >/usr/sbin/refresh-asahi-boot-sources <<'EOF5'
+#!/bin/bash
+set -euo pipefail
+
+install -D -m 0644 /usr/lib64/m1n1/m1n1.bin /var/lib/asahi-boot/m1n1.bin
+install -D -m 0644 /usr/share/uboot/apple_m1/u-boot-nodtb.bin /var/lib/asahi-boot/u-boot-nodtb.bin
+touch -d '2025-01-01 00:00:00 UTC' /var/lib/asahi-boot/m1n1.bin /var/lib/asahi-boot/u-boot-nodtb.bin
+EOF5
+chmod 0755 /usr/sbin/refresh-asahi-boot-sources
+
+/usr/sbin/refresh-asahi-boot-sources
+
+cat >/etc/sysconfig/update-m1n1 <<'EOF6'
+M1N1="/var/lib/asahi-boot/m1n1.bin"
+U_BOOT="/var/lib/asahi-boot/u-boot-nodtb.bin"
+# limit DTBS to Mx and Mx Pro/Max/Ultra
+DTBS="/boot/dtb/apple/t6*.dtb /boot/dtb/apple/t81*.dtb"
+EOF6
+
+cat >/usr/sbin/update-m1n1-safe <<'EOF7'
+#!/bin/bash
+set -euo pipefail
+/usr/sbin/refresh-asahi-boot-sources
+exec /usr/bin/update-m1n1 "$@"
+EOF7
+chmod 0755 /usr/sbin/update-m1n1-safe
+
 # Compile system-wide schemas
 rm -f /usr/share/glib-2.0/schemas/gschemas.compiled
 glib-compile-schemas /usr/share/glib-2.0/schemas

@@ -8,7 +8,7 @@ COPY --from=ghcr.io/ublue-os/brew:latest@sha256:d589a2a9e423e420dbe97de02efff137
 
 # OPTIONS: quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 # Base Image
-FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:42@sha256:1228134ece3829e658c354ed9cf0eb2dc6ef8090e15b1d898f47e67fee30a6e6
+FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:43@sha256:99c8a41bca6c85dfda57bb6ca2dd15b64fe6a138254280fc8186b5357fa7d630
 
 ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"

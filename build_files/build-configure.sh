@@ -69,6 +69,7 @@ kargs = [
   "quiet",
   "splash",
   "plymouth.ignore-serial-consoles",
+  "apple_dcp.show_notch=1",
   "appledrm.show_notch=1"
 ]
 match-architectures = ["aarch64"]

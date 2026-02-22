@@ -82,35 +82,89 @@ cat >/etc/systemd/system.conf.d/10-fast-shutdown.conf <<'EOF4'
 DefaultTimeoutStopSec=10s
 EOF4
 
+# Keep xHCI wakeup enabled across suspend/resume. On some Apple Silicon
+# systems this prevents post-resume USB/YubiKey disappearance.
+mkdir -p /usr/lib/systemd/system
+cat >/usr/lib/systemd/system/xhci-wakeup-enable.service <<'EOF5'
+[Unit]
+Description=Enable xHCI wakeup on Apple Silicon
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for f in /sys/bus/platform/devices/xhci-hcd.*.auto/power/wakeup; do [ -w "$f" ] && echo enabled > "$f"; done'
+
+[Install]
+WantedBy=multi-user.target
+EOF5
+
+mkdir -p /usr/lib/systemd/system-sleep
+cat >/usr/lib/systemd/system-sleep/10-xhci-wakeup <<'EOF6'
+#!/bin/sh
+set -eu
+
+TAG="xhci-wakeup"
+
+log() { logger -t "$TAG" "$*"; }
+
+state_dump() {
+  for f in /sys/bus/platform/devices/xhci-hcd.*.auto/power/wakeup; do
+    [ -e "$f" ] || continue
+    v="$(cat "$f" 2>/dev/null || echo unreadable)"
+    log "phase=$1 file=$f value=$v"
+  done
+}
+
+case "${1:-}" in
+  pre|post)
+    log "hook-start phase=$1"
+    state_dump "$1-before"
+
+    i=0
+    while [ "$i" -lt 8 ]; do
+      for f in /sys/bus/platform/devices/xhci-hcd.*.auto/power/wakeup; do
+        [ -w "$f" ] && echo enabled > "$f" || true
+      done
+      i=$((i+1))
+      sleep 1
+    done
+
+    state_dump "$1-after"
+    log "hook-end phase=$1"
+    ;;
+esac
+EOF6
+chmod 0755 /usr/lib/systemd/system-sleep/10-xhci-wakeup
+
 # Make update-m1n1 robust on immutable /usr images where source file mtimes may
 # trigger gzip warnings and non-zero exits.
 mkdir -p /usr/sbin
 mkdir -p /var/lib/asahi-boot
-cat >/usr/sbin/refresh-asahi-boot-sources <<'EOF5'
+cat >/usr/sbin/refresh-asahi-boot-sources <<'EOF7'
 #!/bin/bash
 set -euo pipefail
 
 install -D -m 0644 /usr/lib64/m1n1/m1n1.bin /var/lib/asahi-boot/m1n1.bin
 install -D -m 0644 /usr/share/uboot/apple_m1/u-boot-nodtb.bin /var/lib/asahi-boot/u-boot-nodtb.bin
 touch -d '2025-01-01 00:00:00 UTC' /var/lib/asahi-boot/m1n1.bin /var/lib/asahi-boot/u-boot-nodtb.bin
-EOF5
+EOF7
 chmod 0755 /usr/sbin/refresh-asahi-boot-sources
 
 /usr/sbin/refresh-asahi-boot-sources
 
-cat >/etc/sysconfig/update-m1n1 <<'EOF6'
+cat >/etc/sysconfig/update-m1n1 <<'EOF8'
 M1N1="/var/lib/asahi-boot/m1n1.bin"
 U_BOOT="/var/lib/asahi-boot/u-boot-nodtb.bin"
 # limit DTBS to Mx and Mx Pro/Max/Ultra
 DTBS="/boot/dtb/apple/t6*.dtb /boot/dtb/apple/t81*.dtb"
-EOF6
+EOF8
 
-cat >/usr/sbin/update-m1n1-safe <<'EOF7'
+cat >/usr/sbin/update-m1n1-safe <<'EOF9'
 #!/bin/bash
 set -euo pipefail
 /usr/sbin/refresh-asahi-boot-sources
 exec /usr/bin/update-m1n1 "$@"
-EOF7
+EOF9
 chmod 0755 /usr/sbin/update-m1n1-safe
 
 # Compile system-wide schemas

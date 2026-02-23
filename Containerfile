@@ -4,11 +4,11 @@ COPY build_files /
 COPY files /files
 COPY --from=ghcr.io/projectbluefin/common:latest@sha256:5decea89ecaf8475ecec754842bdaba1efb46beb91de0b9d0e34c52440c57011 /system_files/bluefin /files
 COPY --from=ghcr.io/projectbluefin/common:latest@sha256:5decea89ecaf8475ecec754842bdaba1efb46beb91de0b9d0e34c52440c57011 /system_files/shared /files
-COPY --from=ghcr.io/ublue-os/brew:latest@sha256:d589a2a9e423e420dbe97de02efff1379d9a3d5ad84c1431db935cc62dc5eeb2 /system_files /files
+COPY --from=ghcr.io/ublue-os/brew:latest@sha256:3efdc1a5844a7db38bb241419fef190e026fb245e9c6f6915e626276cebe5770 /system_files /files
 
 # OPTIONS: quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 # Base Image
-FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:43@sha256:ba2b585c8e4a5022c91cb1b01a87b3297f67b673ce3261cc95f51c00352fd80e
+FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:43@sha256:58271665b694d80060ea96bf82299b76d45bfedcca75ec104516778dcaffc86d
 ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"
 

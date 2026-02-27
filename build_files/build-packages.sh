@@ -29,6 +29,8 @@ dnf5 install --allowerasing -y \
   fedora-asahi-remix-release-cosmic-atomic \
   fedora-asahi-remix-release-identity-cosmic-atomic
 
+dnf5 config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+
 dnf5 install -y \
   tmux \
   just \
@@ -48,6 +50,7 @@ dnf5 install -y \
   virt-manager \
   openvswitch \
   swtpm \
+  tailscale \
   greetd \
   @cosmic-desktop-environment
 

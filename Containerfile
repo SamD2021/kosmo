@@ -48,14 +48,14 @@ RUN --mount=type=tmpfs,dst=/var \
   --mount=type=tmpfs,dst=/boot \
   --mount=type=tmpfs,dst=/run \
   --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
-  /tmp/ctx/build-configure.sh
+  /tmp/ctx/build-packages.sh
 
 RUN --mount=type=tmpfs,dst=/var \
   --mount=type=tmpfs,dst=/tmp \
   --mount=type=tmpfs,dst=/boot \
   --mount=type=tmpfs,dst=/run \
   --mount=type=bind,from=ctx,source=/,dst=/tmp/ctx \
-  /tmp/ctx/build-packages.sh
+  /tmp/ctx/build-configure.sh
 
 RUN --mount=type=tmpfs,dst=/var \
   --mount=type=tmpfs,dst=/tmp \

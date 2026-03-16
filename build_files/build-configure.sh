@@ -163,9 +163,136 @@ cat >/usr/sbin/update-m1n1-safe <<'EOF9'
 #!/bin/bash
 set -euo pipefail
 /usr/sbin/refresh-asahi-boot-sources
+stamp_dir="/var/lib/asahi-boot"
+stamp_file="${stamp_dir}/last-applied-kver"
+kver="$(uname -r)"
+
+if [[ -f "${stamp_file}" ]] && [[ "$(cat "${stamp_file}")" == "${kver}" ]]; then
+    logger -t asahi-update-m1n1 "skip: boot artifacts already applied for ${kver}"
+    exit 0
+fi
+
 exec /usr/bin/update-m1n1 "$@"
+printf '%s\n' "${kver}" > "${stamp_file}"
+logger -t asahi-update-m1n1 "updated boot artifacts for ${kver}"
 EOF9
 chmod 0755 /usr/sbin/update-m1n1-safe
+
+cat >/usr/sbin/asahi-sync-dtb <<'EOF10'
+#!/bin/bash
+set -euo pipefail
+
+kver="$(uname -r)"
+src="/usr/lib/modules/${kver}/dtb"
+dst="/boot/dtb"
+
+if [[ ! -d "${src}" ]]; then
+    logger -t asahi-sync-dtb "skip: missing source dtb dir ${src}"
+    exit 0
+fi
+
+mkdir -p "${dst}"
+
+if command -v rsync >/dev/null 2>&1; then
+    rsync -a --delete "${src}/" "${dst}/"
+else
+    rm -rf "${dst:?}/"*
+    cp -a "${src}/." "${dst}/"
+fi
+
+sync
+logger -t asahi-sync-dtb "synced dtbs for ${kver}: ${src} -> ${dst}"
+EOF10
+chmod 0755 /usr/sbin/asahi-sync-dtb
+
+cat >/usr/sbin/asahi-verify-boot-artifacts <<'EOF11'
+#!/bin/bash
+set -euo pipefail
+
+kver="$(uname -r)"
+src="/usr/lib/modules/${kver}/dtb"
+dst="/boot/dtb"
+
+if [[ ! -d "${src}" || ! -d "${dst}" ]]; then
+    logger -t asahi-boot-verify "warn: dtb source or destination missing (src=${src} dst=${dst})"
+else
+    tmp_src="$(mktemp)"
+    tmp_dst="$(mktemp)"
+    trap 'rm -f "${tmp_src}" "${tmp_dst}"' EXIT
+
+    (
+        cd "${src}"
+        find . -type f -name '*.dtb' -print0 | sort -z | xargs -0 -r sha256sum
+    ) >"${tmp_src}"
+    (
+        cd "${dst}"
+        find . -type f -name '*.dtb' -print0 | sort -z | xargs -0 -r sha256sum
+    ) >"${tmp_dst}"
+
+    if diff -u "${tmp_src}" "${tmp_dst}" >/dev/null; then
+        logger -t asahi-boot-verify "ok: /boot dtb content matches /usr/lib/modules/${kver}/dtb"
+    else
+        logger -t asahi-boot-verify "warn: /boot dtb content differs from /usr/lib/modules/${kver}/dtb"
+    fi
+fi
+
+if [[ -s /boot/efi/m1n1/boot.bin ]]; then
+    logger -t asahi-boot-verify "ok: ESP m1n1 boot.bin present"
+else
+    logger -t asahi-boot-verify "warn: ESP m1n1 boot.bin missing or empty"
+fi
+EOF11
+chmod 0755 /usr/sbin/asahi-verify-boot-artifacts
+
+cat >/usr/lib/systemd/system/asahi-sync-dtb.service <<'EOF12'
+[Unit]
+Description=Sync DTBs to /boot for current kernel
+DefaultDependencies=no
+After=local-fs.target
+Before=asahi-update-m1n1.service multi-user.target
+ConditionPathExists=/usr/sbin/asahi-sync-dtb
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/asahi-sync-dtb
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target
+EOF12
+
+cat >/usr/lib/systemd/system/asahi-update-m1n1.service <<'EOF13'
+[Unit]
+Description=Refresh m1n1 boot blob on ESP
+DefaultDependencies=no
+After=local-fs.target asahi-sync-dtb.service
+Requires=asahi-sync-dtb.service
+Before=multi-user.target
+ConditionPathExists=/usr/bin/update-m1n1
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/update-m1n1-safe
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target
+EOF13
+
+cat >/usr/lib/systemd/system/asahi-verify-boot-artifacts.service <<'EOF14'
+[Unit]
+Description=Verify Asahi boot artifacts after sync
+After=asahi-update-m1n1.service
+ConditionPathExists=/usr/sbin/asahi-verify-boot-artifacts
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/asahi-verify-boot-artifacts
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target
+EOF14
 
 # Compile system-wide schemas
 rm -f /usr/share/glib-2.0/schemas/gschemas.compiled

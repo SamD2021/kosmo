@@ -5,6 +5,10 @@ set -ouex pipefail
 dnf5 -y copr enable scottames/ghostty
 dnf5 -y copr enable architektapx/zen-browser
 
+rpm --import https://downloads.1password.com/linux/keys/1password.asc
+
+sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
+
 # Aggressive GNOME desktop purge: fail hard on conflicts.
 dnf5 remove -y \
   gdm \
@@ -52,6 +56,8 @@ dnf5 install -y \
   swtpm \
   tailscale \
   greetd \
+  lxpolkit \
+  1password-cli \
   @cosmic-desktop-environment
 
 # Ensure Widevine prefs are always present in immutable /opt payload.

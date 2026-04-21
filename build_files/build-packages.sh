@@ -5,6 +5,16 @@ set -ouex pipefail
 dnf5 -y copr enable scottames/ghostty
 dnf5 -y copr enable architektapx/zen-browser
 
+# Keep 1Password CLI group ID stable across rpm-ostree/bootc deployments.
+if getent group onepassword-cli >/dev/null; then
+	current_gid="$(getent group onepassword-cli | cut -d: -f3)"
+	if [ "$current_gid" != "30001" ]; then
+		groupmod -g 30001 onepassword-cli
+	fi
+else
+	groupadd -g 30001 onepassword-cli
+fi
+
 rpm --import https://downloads.1password.com/linux/keys/1password.asc
 
 sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
@@ -61,10 +71,6 @@ dnf5 install -y \
 	@cosmic-desktop-environment
 
 # Enforce Linux app-integration permissions for immutable systems.
-if ! getent group onepassword-cli >/dev/null; then
-	groupadd onepassword-cli
-fi
-
 for op_bin in /usr/bin/op /usr/sbin/op; do
 	if [ -e "$op_bin" ]; then
 		chgrp onepassword-cli "$op_bin"

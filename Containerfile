@@ -2,13 +2,13 @@
 FROM scratch AS ctx
 COPY build_files /
 COPY files /files
-COPY --from=ghcr.io/projectbluefin/common:latest@sha256:6db2b568513789868023ecc80b4b87e5a354f6c83206bdca57db9c6647d48fe4 /system_files/bluefin /files
-COPY --from=ghcr.io/projectbluefin/common:latest@sha256:6db2b568513789868023ecc80b4b87e5a354f6c83206bdca57db9c6647d48fe4 /system_files/shared /files
-COPY --from=ghcr.io/ublue-os/brew:latest@sha256:7d15cef4485d33f5a03f734b7f89cb02ab0cb694aa0115c12bf42f5fed5e9e08 /system_files /files
+COPY --from=ghcr.io/projectbluefin/common:latest@sha256:47abba6e2a15e36efcb18255fefa7c65673337404719a925d74409c6e080929e /system_files/bluefin /files
+COPY --from=ghcr.io/projectbluefin/common:latest@sha256:47abba6e2a15e36efcb18255fefa7c65673337404719a925d74409c6e080929e /system_files/shared /files
+COPY --from=ghcr.io/ublue-os/brew:latest@sha256:7646a12d0369270ba479bde05d69e273af966a55178f283b0f717381d086ca7a /system_files /files
 
 # OPTIONS: quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42
 # Base Image
-FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:43@sha256:a4e67cbd702607b4ccabc196f5cf4bfa8b744d9a34bfdc282cd7933194d8a182
+FROM quay.io/fedora-asahi-remix-atomic-desktops/silverblue:43@sha256:b715a7dfd3ba07359facac977de19292bde9d81f9f84b050f2f4affe901c1cf5
 ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"
 

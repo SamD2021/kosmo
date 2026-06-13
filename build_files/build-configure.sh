@@ -56,10 +56,6 @@ EOF2
 # Copy static files from context
 cp -avf /tmp/ctx/files/. /
 
-# Remove inherited GNOME-specific schema overrides from common layer.
-rm -f /usr/share/glib-2.0/schemas/zz0-bluefin-modifications.gschema.override
-rm -f /usr/share/glib-2.0/schemas/zz3-bluefin-unsupported-stuff.gschema.override
-
 # Bootc kernel args:
 # - quiet + splash: keep graphical LUKS unlock
 # - plymouth.ignore-serial-consoles: reduce boot delay on Apple Silicon

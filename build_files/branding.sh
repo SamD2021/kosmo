@@ -55,7 +55,7 @@ DOCUMENTATION_URL="${DOCUMENTATION_URL}"
 SUPPORT_URL="${SUPPORT_URL}"
 PLATFORM_ID="${BASE_PLATFORM_ID:-platform:f${BASE_VERSION_ID:-0}}"
 LOGO=img-logo-icon
-DEFAULT_HOSTNAME="kosmic"
+DEFAULT_HOSTNAME="kosmo"
 EOF
 
 # fastfetch user count (placeholder until you add your own endpoint)

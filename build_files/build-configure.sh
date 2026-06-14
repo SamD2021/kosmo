@@ -55,6 +55,24 @@ EOF2
 
 # Copy static files from context
 cp -avf /tmp/ctx/files/. /
+chmod 0755 /usr/bin/kosmo-battery-idle-action
+
+# Route DMS's suspend action through a helper that keeps AC suspend normal and
+# powers off when the laptop is on battery.
+dms_settings=/usr/share/zirconium/zdots/dot_config/DankMaterialShell/settings.json
+if [[ -f "${dms_settings}" ]]; then
+  python3 - <<'PY'
+import json
+from pathlib import Path
+
+path = Path("/usr/share/zirconium/zdots/dot_config/DankMaterialShell/settings.json")
+settings = json.loads(path.read_text())
+settings["customPowerActionSuspend"] = "/usr/bin/kosmo-battery-idle-action"
+settings["batterySuspendBehavior"] = 0
+settings["batterySuspendTimeout"] = 3600
+path.write_text(json.dumps(settings, indent=2) + "\n")
+PY
+fi
 
 # Bootc kernel args:
 # - quiet + splash: keep graphical LUKS unlock

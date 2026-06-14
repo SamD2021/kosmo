@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+power_supply_dir=/sys/class/power_supply
+on_external_power=0
+
+for supply in "$power_supply_dir"/*; do
+    [ -e "$supply/type" ] || continue
+
+    type=$(cat "$supply/type" 2>/dev/null || true)
+    case "$type" in
+        Battery|Unknown)
+            continue
+            ;;
+    esac
+
+    if [ -r "$supply/online" ] && [ "$(cat "$supply/online" 2>/dev/null || printf 0)" = "1" ]; then
+        on_external_power=1
+        break
+    fi
+done
+
+if [ "$on_external_power" = "1" ]; then
+    exec systemctl suspend
+fi
+
+exec systemctl poweroff

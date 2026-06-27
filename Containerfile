@@ -4,7 +4,7 @@ COPY build_files /
 COPY files /files
 
 # Base Image
-FROM ghcr.io/samd2021/zirconium-asahi:latest-arm64@sha256:accb1438b63507577e213f5808e245602347ecc80bd3850039b43593eaddb8ac
+FROM ghcr.io/samd2021/zirconium-asahi:latest-arm64@sha256:f2dc98d1ea1c0142eceb8badf779de697f32e9ef724b5437edfcb927dbcdbe66
 ARG IMAGE_NAME="${IMAGE_NAME:-kosmo}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-samd2021}"
 

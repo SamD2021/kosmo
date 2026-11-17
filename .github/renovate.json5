@@ -1,35 +1,49 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:best-practices"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
   ],
-
-  "rebaseWhen": "never",
-
-  "timezone": "Etc/UTC",
-  "schedule": ["before 6am on monday"],
-
-  "dependencyDashboard": true,
-  "labels": ["dependencies", "renovate"],
-
-  "packageRules": [
+  rebaseWhen: 'never',
+  timezone: 'Etc/UTC',
+  schedule: [
+    'before 6am on monday',
+  ],
+  dependencyDashboard: {
+    enabled: true,
+  },
+  labels: [
+    'dependencies',
+    'renovate',
+  ],
+  packageRules: [
     {
-      "description": "Automerge low-risk pin updates",
-      "automerge": true,
-      "matchUpdateTypes": ["pin", "pinDigest"]
+      description: 'Automerge low-risk pin updates',
+      automerge: true,
+      matchUpdateTypes: [
+        'pin',
+        'pinDigest',
+      ],
     },
     {
-      "description": "Container digest bumps are manual review",
-      "matchManagers": ["dockerfile"],
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["digest"],
-      "automerge": false,
-      "groupName": "container digests"
+      description: 'Container digest bumps are manual review',
+      matchManagers: [
+        'dockerfile',
+      ],
+      matchDatasources: [
+        'docker',
+      ],
+      matchUpdateTypes: [
+        'digest',
+      ],
+      automerge: false,
+      groupName: 'container digests',
     },
     {
-      "description": "Keep GitHub Actions updates manual",
-      "matchManagers": ["github-actions"],
-      "automerge": false
-    }
-  ]
+      description: 'Keep GitHub Actions updates manual',
+      matchManagers: [
+        'github-actions',
+      ],
+      automerge: false,
+    },
+  ],
 }
